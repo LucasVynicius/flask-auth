@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY']= 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
-LoginManager = LoginManager()
+login_manager = LoginManager()
 db.init_app(app)
 login_manager.init_app(app)
 
@@ -20,8 +20,11 @@ def login():
     username = data.get("username")
     password = data.get("password")
 
-    if username and password:
-        pass
+    if user:
+        user = User.query,filter_by(username=username).first()
+
+        if user and user.password == password:
+            return jsonify({"message": "Login bem-sucedido"})
 
     return jsonify({"message": "Credenciais inválida"}), 400
 
