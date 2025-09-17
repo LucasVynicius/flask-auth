@@ -41,7 +41,23 @@ def login():
     return jsonify({"message": "Credenciais inválida"}), 400
 
 
+@app.route("/user", methods=["POST"])
+@login_required
+def create_user():
+    data = request.get_json()
+    username = data.get("username")
+    password = data.get("password")
 
+    if username and password:
+        # if User.query.filter_by(username=username).first():
+        #     return jsonify({"message": "Usuário já existe"}), 400
+
+        new_user = User(username=username, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({"message": "Usuário criado com sucesso"}), 201
+
+    return jsonify({"message": "Dados inválidos"}), 400
 
 @app.route("/hello-world", methods=["GET"])
 def hello_word():
