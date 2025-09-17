@@ -59,10 +59,40 @@ def create_user():
 
     return jsonify({"message": "Dados inválidos"}), 400
 
-@app.route("/hello-world", methods=["GET"])
-def hello_word():
-    return "Hello, World!"
+@app.route("/user/<int:user_id>", methods=["GET"])
+@login_required
+def read_user(user_id):
+    user = User.query.get(user_id)
 
+    if user:
+        return jsonify({"id": user.id, "username": user.username}), 200
+    
+    return jsonify({"message": "Usuário não encontrado"}), 404
+
+@app.route("/user/<int:user_id>", methods=["PUT"])
+@login_required
+def update_user(user_id):
+    data = request.get_json()
+    user = User.query.get(user_id)
+
+    if user and data.get("password"):
+        user.password = data.get("password")
+        db.session.commit()
+        return jsonify({"message": f"Usuário {user_id} atualizado com sucesso"}), 200
+
+    return jsonify({"message": "Dados inválidos ou usuário não encontrado"}), 400
+
+# @app.route("/user/<int:user_id>", methods=["DELETE"])
+# @login_required
+# def delete_user(user_id):
+#     user = User.query.get(user_id)
+
+#     if user:
+#         db.session.delete(user)
+#         db.session.commit()
+#         return jsonify({"message": f"Usuário {user_id} deletado com sucesso"}), 200
+
+#     return jsonify({"message": "Usuário não encontrado"}), 404
 
 if __name__ == "__main__":
     app.run(debug=True)
