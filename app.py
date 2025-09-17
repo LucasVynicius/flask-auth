@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from models.user import User
 from database import db
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
+import bcrypt
 
 app = Flask(__name__)
 app.config['SECRET_KEY']= 'your_secret_key'
@@ -33,7 +34,7 @@ def login():
     if username and password:
         user = User.query.filter_by(username=username).first()
 
-        if user and user.password == password:
+        if user and bcrypt.checkpw(str.encode(password), str.encode(user.password)):
             login_user(user)
             print(current_user.is_authenticated)
             return jsonify({"message": "Login bem-sucedido"})
@@ -51,8 +52,8 @@ def create_user():
     if username and password:
         # if User.query.filter_by(username=username).first():
         #     return jsonify({"message": "Usuário já existe"}), 400
-
-        new_user = User(username=username, password=password, role='user')
+        hashed_password = bcrypt.hashpw(str.encode(password), bcrypt.gensalt())
+        new_user = User(username=username, password=hashed_password, role='user')
         db.session.add(new_user)
         db.session.commit()
         return jsonify({"message": "Usuário criado com sucesso"}), 201
