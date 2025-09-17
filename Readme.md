@@ -20,3 +20,14 @@ Uma API REST simples de autenticação e gerenciamento de usuários utilizando *
 ```bash
 git clone https://github.com/seu-usuario/flask-auth-api.git
 cd flask-auth-api
+
+2. **Crie um ambiente virtual (recomendado)**:
+python -m venv venv
+source venv/bin/activate  # Linux/macOS
+venv\Scripts\activate     # Windows
+
+3. **Instale as dependências**:
+pip install -r requirements.txt
+
+4. **Execute a aplicação**:
+python app.py
