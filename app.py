@@ -52,7 +52,7 @@ def create_user():
         # if User.query.filter_by(username=username).first():
         #     return jsonify({"message": "Usuário já existe"}), 400
 
-        new_user = User(username=username, password=password)
+        new_user = User(username=username, password=password, role='user')
         db.session.add(new_user)
         db.session.commit()
         return jsonify({"message": "Usuário criado com sucesso"}), 201
@@ -82,6 +82,9 @@ def update_user(user_id):
     data = request.get_json()
     user = User.query.get(user_id)
 
+    if user_id != current_user.id and current_user.role == "user":
+        return jsonify({"message": "Você não pode atualizar outro usuário"}), 403
+
     if user and data.get("password"):
         user.password = data.get("password")
         db.session.commit()
@@ -93,6 +96,9 @@ def update_user(user_id):
 @login_required
 def delete_user(user_id):
     user = User.query.get(user_id)
+
+    if current_user.role != "admin":
+        return jsonify({"message": "Apenas administradores podem deletar usuários"}), 403
 
     if user_id == current_user.id:
         return jsonify({"message": "Você não pode deletar seu próprio usuário"}), 403
